@@ -19,14 +19,20 @@ command
 ** Running a Container
 
 In order to run the container use the following command from the directory which
-you will be creating charts in
+you will be creating charts in. This will automatically pull the docker image
+from dockerhub so no need to build locally prior.
 #+begin_src bash
   docker run --privileged --rm -itdv $(pwd):/charts --name [NAME] \
-         kalonlkelley/helm-dynamic-dev-env server --snapshotter native
+         kalonlkelley/helm-dynamic-dev-env:latest server --snapshotter native
 #+end_src
 Where [NAME] is the name of your container.
 
 In order to now enter the container for using helm run the following command
 #+begin_src bash
   docker exec -it [NAME] /bin/sh
+#+end_src
+
+When you are all done to stop the container run
+#+begin_src bash
+  docker stop [NAME]
 #+end_src
