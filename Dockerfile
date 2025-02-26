@@ -1,25 +1,21 @@
-FROM ubuntu:22.04
-
-RUN apt update && apt install -y software-properties-common
-RUN add-apt-repository ppa:longsleep/golang-backports
-RUN apt update && apt install -y \
+FROM alpine:3.21 AS tools
+RUN apk add --no-cache \
+    bash \
     git \
-    build-essential \
-    golang-go \
+    build-base \
+    go \
     curl
-RUN git clone https://github.com/Kalon-Kelley/helm-dynamic-dependencies.git \
-    /helm-src
-WORKDIR /helm-src
+RUN git clone https://github.com/Kalon-Kelley/helm-dynamic-dependencies.git /hd
+RUN git clone https://github.com/helm/helm.git /h
+RUN cd /hd && make
+RUN cd /h && make
+RUN mv /hd/bin/helm /hd/bin/helm-dyn
 
-RUN make
-ENV PATH="/helm-src/bin:$PATH"
+FROM rancher/k3s AS k3s
 
-RUN mkdir -p /charts
-RUN mkdir -p /log
-
-COPY entrypoint.sh /run/
-RUN curl -sfL https://get.k3s.io | INSTALL_K3S_SKIP_ENABLE=true sh -
+ENV PATH="/h/bin:/hd/bin:/usr/bin:/usr/local/bin:$PATH"
+COPY --from=tools /hd /hd
+COPY --from=tools /h /h
 ENV KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
-
+RUN mkdir -p /charts
 WORKDIR /charts
-ENTRYPOINT ["/run/entrypoint.sh"]

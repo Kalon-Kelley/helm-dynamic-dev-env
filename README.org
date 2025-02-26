@@ -5,8 +5,12 @@ kalonlkelley/helm-dynamic-dev-env
 
 ** Building Locally
 
-The docker image can also be built locally with the following command if a
-multiarch builder is used
+The docker image can also be built locally with the following command
+#+begin_src bash
+  docker build -f Dockerfile --tag kalonlkelley/helm-dynamic-dev-env:latest .
+#+end_src
+If a multiarch builder is used (or just buildx is preferred) then use this
+command
 #+begin_src bash
   docker buildx --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
          --tag kalonlkelley/helm-dynamic-dev-env:latest .
@@ -14,20 +18,15 @@ multiarch builder is used
 
 ** Running a Container
 
-In order to run the container use the following command
+In order to run the container use the following command from the directory which
+you will be creating charts in
 #+begin_src bash
-  docker run --rm -it kalonlkelley/helm-dynamic-dev-env
+  docker run --privileged --rm -itdv $(pwd):/charts --name [NAME] \
+         kalonlkelley/helm-dynamic-dev-env server --snapshotter native
 #+end_src
+Where [NAME] is the name of your container.
 
-The working directory inside the container is `/charts` which can be mounted
-over like in the following example
+In order to now enter the container for using helm run the following command
 #+begin_src bash
-  docker run --rm -it -v $(pwd):/charts helm-dynamic-dev-env
-#+end_src
-
-If you are trying to test a development version of helm which you have cloned
-locally in your working directory you can have the container build and use that
-by mounting it to the directory `/helm-src` and providing the `--rebuild` flag
-#+begin_src bash
-  docker run --rm -it -v $(pwd):/helm-src helm-dynamic-dev-env --rebuild
+  docker exec -it [NAME] /bin/sh
 #+end_src
