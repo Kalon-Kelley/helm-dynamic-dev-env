@@ -26,5 +26,4 @@ RUN /venv/bin/pip install --no-cache-dir -r requirements.txt
 
 COPY ./evaluation.py /evaluation.py
 
-# Entry point: Run k3d cluster in the background and then execute your script
 ENTRYPOINT ["sh", "-c", "k3d cluster create mycluster & tail -f /dev/null"]
