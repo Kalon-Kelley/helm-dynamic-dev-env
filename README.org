@@ -32,6 +32,16 @@ In order to now enter the container for using helm run the following command
   docker exec -it [NAME] /bin/sh
 #+end_src
 
+To enable the virtual environment run
+#+begin_src bash
+  source /venv/bin/activate
+#+end_src
+
+To evaluate run
+#+begin_src bash
+  python evaluation.py
+#+end_src
+
 When you are all done to stop the container run
 #+begin_src bash
   docker stop [NAME]
