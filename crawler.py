@@ -3,10 +3,12 @@ import random
 import requests
 import time
 
+# top number of helm charts to pull
+num = 20
+
 def random_time():
     return random.uniform(1,2)
 
-num = 1000
 start_time = time.time()
 repo_chart_names = []
 
@@ -34,19 +36,31 @@ for name in repo_chart_names:
     url = f'https://artifacthub.io/api/v1/packages/helm/{name}'
     obj = requests.get(url).json()
     time.sleep(random_time())
-    if 'dependencies' in obj['data']:
-        chart_dependency[name] = len(obj['data']['dependencies'])
-    else:
-        chart_dependency[name] = 0
 
-with open('dependency_data.csv', 'w', newline='') as f:
-    field_names = ['repo_chart_name', 'dependency_count']
+    chart_info = dict()
+
+    # count number of dependencies
+    if 'dependencies' in obj['data']:
+        chart_info['dep_count'] = len(obj['data']['dependencies'])
+    else:
+        chart_info['dep_count'] = 0
+    
+    # get repo url
+    chart_info['repo_url'] = obj['repository']['url']
+
+    # TODO: dependency chain? go to dependencies, do a total count
+    # TODO: does dependency version matter?
+    chart_dependency[name] = chart_info
+
+with open('chart_info.csv', 'w', newline='') as f:
+    field_names = ['repo_chart_name', 'dependency_count', 'repo_url']
     writer = csv.DictWriter(f, fieldnames=field_names)
 
     writer.writeheader()
     for name in repo_chart_names:
-        writer.writerow({'repo_chart_name': name, 'dependency_count': chart_dependency[name]})
+        writer.writerow({'repo_chart_name': name,
+                         'dependency_count': chart_dependency[name]['dep_count'],
+                         'repo_url': chart_dependency[name]['repo_url']})
 
 end_time = time.time()
 print(f'--- {end_time - start_time} seconds ---')
-
