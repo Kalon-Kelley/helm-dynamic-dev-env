@@ -4,7 +4,7 @@ import requests
 import time
 
 # top number of helm charts to pull
-num = 20
+NUM = 100
 
 def random_time():
     return random.uniform(1,2)
@@ -12,7 +12,7 @@ def random_time():
 start_time = time.time()
 repo_chart_names = []
 
-# get names of top {num} helm charts
+# get names of top {NUM} helm charts
 off = 0
 count = 0
 while True:
@@ -24,11 +24,13 @@ while True:
         chart_name = package['normalized_name']
         repo_chart_names.append(f'{repo_name}/{chart_name}')
         count += 1
-        if count >= num:
+        if count >= NUM:
             break
-    if count >= num:
+    if count >= NUM:
         break
     off += 1
+
+print(f'retrieved top {NUM} charts, crawling through each chart...')
 
 # go through each url and count number of dependencies
 chart_dependency = dict()
@@ -52,15 +54,28 @@ for name in repo_chart_names:
     # TODO: does dependency version matter?
     chart_dependency[name] = chart_info
 
-with open('chart_info.csv', 'w', newline='') as f:
-    field_names = ['repo_chart_name', 'dependency_count', 'repo_url']
+print('finished crawling, creating output files...')
+
+# create csv for evaluation script
+with open('chart_name_url.csv', 'w', newline='') as f:
+    field_names = ['repo_chart_name', 'repo_url']
     writer = csv.DictWriter(f, fieldnames=field_names)
 
     writer.writeheader()
     for name in repo_chart_names:
         writer.writerow({'repo_chart_name': name,
-                         'dependency_count': chart_dependency[name]['dep_count'],
                          'repo_url': chart_dependency[name]['repo_url']})
 
+# create csv for dependency stats
+with open('chart_dependency.csv', 'w', newline='') as f:
+    field_names = ['repo_chart_name', 'total_dependency_count']
+    writer = csv.DictWriter(f, fieldnames=field_names)
+
+    writer.writeheader()
+    for name in repo_chart_names:
+        writer.writerow({'repo_chart_name': name,
+                         'total_dependency_count': chart_dependency[name]['dep_count']})
+
+print('finished creating output files!')
 end_time = time.time()
 print(f'--- {end_time - start_time} seconds ---')

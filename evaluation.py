@@ -6,12 +6,13 @@ import yaml
 
 from pathlib import Path
 
-REPO_CHART_MAP = {
-    'https://kubernetes.github.io/dashboard': 'k8s-dashboard/kubernetes-dashboard',
-    'https://argoproj.github.io/argo-helm': 'argo/argo-cd',
-    'https://releases.rancher.com/server-charts/stable': 'rancher-stable/rancher',
-    'https://charts.jfrog.io': 'jfrog/artifactory',
-}
+# REPO_CHART_MAP = {
+#     'https://kubernetes.github.io/dashboard': 'k8s-dashboard/kubernetes-dashboard',
+#     'https://argoproj.github.io/argo-helm': 'argo/argo-cd',
+#     'https://releases.rancher.com/server-charts/stable': 'rancher-stable/rancher',
+#     'https://charts.jfrog.io': 'jfrog/artifactory',
+# }
+CHART_FILE = 'chart_name_url.csv'
 WORKSPACE = '/charts'
 RESULTS_FILE = 'results.csv'
 
@@ -42,6 +43,14 @@ def process_charts_and_evaluate(repo, chart):
     shutil.rmtree(dynamic_chart_path / 'Chart.lock', ignore_errors=True)
 
     return static_chart_path, dynamic_chart_path
+
+def get_chart_details(file):
+    chart_map = dict()
+    with open(file, newline='') as f:
+        reader = csv.DictReader(f, delimiter=',')
+        for row in reader:
+            chart_map[row['repo_url']] = row['repo_chart_name']
+    return chart_map
 
 def run_command_timed(cmd, path):
     """ Helper to calculate time taken to run a command
@@ -86,7 +95,9 @@ def main():
     build_time_overhead_results = []
     package_size_results = []
 
-    for repo, chart in REPO_CHART_MAP.items():
+    repo_chart_map = get_chart_details(CHART_FILE)
+
+    for repo, chart in repo_chart_map.items():
         static_chart_path, dynamic_chart_path = process_charts_and_evaluate(repo, chart)
         
         # Evaluation 1: calculate build time overhead
