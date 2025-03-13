@@ -11,9 +11,9 @@ k8s-dashboard/kubernetes-dashboard,1,1,1
 traefik/traefik,0,0,0
 grafana/loki,0,0,0
 metrics-server/metrics-server,0,0,0
-gitlab/gitlab,10,2,16
+gitlab/gitlab,10,2,17
 hashicorp/vault,0,0,0
-bitnami/keycloak,2,1,2
+bitnami/keycloak,2,2,3
 jenkinsci/jenkins,0,0,0
 harbor/harbor,0,0,0
 bitnami/rabbitmq,1,1,1
@@ -41,15 +41,15 @@ fluent/fluent-bit,0,0,0
 metallb/metallb,1,1,1
 datadog/datadog,0,0,0
 istio-official/istiod,0,0,0
-sonarqube/sonarqube,1,1,1
+sonarqube/sonarqube,1,2,2
 bitnami/thanos,1,1,1
-bitnami/wordpress,2,1,2
-gitea/gitea,2,1,2
+bitnami/wordpress,2,2,3
+gitea/gitea,2,2,4
 kyverno/kyverno,1,1,1
 nfs-subdir-external-provisioner/nfs-subdir-external-provisioner,0,0,0
 nginx/nginx-ingress,0,0,0
 runix/pgadmin4,0,0,0
-artifact-hub/artifact-hub,1,1,1
+artifact-hub/artifact-hub,1,2,2
 oauth2-proxy/oauth2-proxy,0,0,0
 bitnami/mariadb,1,1,1
 bitnami/nginx,1,1,1
@@ -59,7 +59,7 @@ mojo2600/pihole,0,0,0
 hashicorp/consul,0,0,0
 bitnami/metrics-server,1,1,1
 kedacore/keda,0,0,0
-sentry/sentry,7,1,7
+sentry/sentry,7,2,13
 bitnami/elasticsearch,1,1,1
 elastic/eck-operator,1,1,1
 prometheus-community/kube-state-metrics,0,0,0
@@ -67,7 +67,7 @@ goauthentik/authentik,1,1,1
 descheduler/descheduler,0,0,0
 argo/argocd-apps,0,0,0
 argo/argo-rollouts,0,0,0
-jaegertracing/jaeger,2,1,2
+jaegertracing/jaeger,2,2,3
 istio-official/base,0,0,0
 bitnami/postgresql-ha,1,1,1
 jupyterhub/jupyterhub,0,0,0
@@ -75,7 +75,7 @@ bitnami/redis-cluster,1,1,1
 istio-official/gateway,0,0,0
 prometheus-community/prometheus-blackbox-exporter,0,0,0
 kubeview/kubeview,0,0,0
-airflow-helm/airflow,2,1,2
+airflow-helm/airflow,2,2,4
 grafana/mimir-distributed,2,1,2
 kvaps/nfs-server-provisioner,0,0,0
 pmint93/metabase,0,0,0
@@ -87,7 +87,7 @@ bitnami/metallb,1,1,1
 stakater/reloader,0,0,0
 renovate/renovate,1,1,1
 bitnami/spark,1,1,1
-codecentric/keycloak,1,1,1
+codecentric/keycloak,1,2,2
 elastic/logstash,0,0,0
 crossplane/crossplane,0,0,0
 twuni/docker-registry,0,0,0

@@ -39,12 +39,23 @@ visited_chart_info = dict()
 def visit_chart(name):
     if name in visited_chart_info:
         return visited_chart_info[name]
+    
+    chart_info = {
+        'repo_url': '',
+        'first_layer_dep_count': 0,
+        'num_layers_below': 0,
+        'total_dep_count': 0
+    }
 
-    url = f'https://artifacthub.io/api/v1/packages/helm/{name}'
-    obj = requests.get(url).json()
+    try:
+        url = f'https://artifacthub.io/api/v1/packages/helm/{name}'
+        obj = requests.get(url).json()
+        if 'message' in obj and obj['message'] == '':
+            return chart_info
+    except:
+        return chart_info
+
     time.sleep(random_time())
-
-    chart_info = dict()
 
     # count number of dependencies
     if 'dependencies' in obj['data']:
@@ -54,9 +65,11 @@ def visit_chart(name):
         for dep in obj['data']['dependencies']:
             if 'artifacthub_repository_name' in dep:
                 dep_name = f"{dep['artifacthub_repository_name']}/{dep['name']}"
-                dep_chart_info = visit_chart(dep_name)
-                chart_info['num_layers_below'] = max(chart_info['num_layers_below'], dep_chart_info['num_layers_below'] + 1)
-                chart_info['total_dep_count'] += dep_chart_info['total_dep_count']
+            else:
+                dep_name = f"bitnami/{dep['name']}"
+            dep_chart_info = visit_chart(dep_name)
+            chart_info['num_layers_below'] = max(chart_info['num_layers_below'], dep_chart_info['num_layers_below'] + 1)
+            chart_info['total_dep_count'] += dep_chart_info['total_dep_count']
     else:
         chart_info['first_layer_dep_count'] = 0
         chart_info['num_layers_below'] = 0
