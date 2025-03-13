@@ -6,6 +6,8 @@ RUN apk add --no-cache \
     curl \
     make \
     go \
+    docker \
+    openrc \
     && curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash \
     && ln -s /usr/local/bin/k3d /usr/bin/k3d
 
@@ -19,11 +21,12 @@ ENV PATH="/h/bin:/hd/bin:/usr/local/bin:$PATH"
 
 RUN mkdir -p /charts
 WORKDIR /charts
+RUN export HELM_EXPERIMENTAL_OCI=1
 
 COPY requirements.txt ./requirements.txt
 RUN python3 -m venv /venv
 RUN /venv/bin/pip install --no-cache-dir -r requirements.txt
 
-COPY ./evaluation.py /evaluation.py
+COPY evaluation.py ./evaluation.py
 
-ENTRYPOINT ["sh", "-c", "k3d cluster create mycluster & tail -f /dev/null"]
+ENTRYPOINT ["sh", "-c", "dockerd --host=unix:///var/run/docker.sock & k3d cluster delete mycluster & k3d cluster create mycluster & tail -f /dev/null"]
