@@ -4,7 +4,7 @@ import requests
 import time
 
 # top number of helm charts to pull
-NUM = 10
+NUM = 100
 
 def random_time():
     return random.uniform(1,2)
@@ -70,10 +70,6 @@ def visit_chart(name):
 
 for name in repo_chart_names:
     chart_dependency[name] = visit_chart(name)
-
-print(chart_dependency)
-print()
-print(visited_chart_info)
 
 print('finished crawling, creating output files...')
 
