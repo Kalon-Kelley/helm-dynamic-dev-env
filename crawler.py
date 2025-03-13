@@ -74,7 +74,7 @@ for name in repo_chart_names:
 print('finished crawling, creating output files...')
 
 # create csv for evaluation script
-with open('chart_name_url.csv', 'w', newline='') as f:
+with open('results/chart_name_url.csv', 'w', newline='') as f:
     field_names = ['repo_chart_name', 'repo_url']
     writer = csv.DictWriter(f, fieldnames=field_names)
 
@@ -84,7 +84,7 @@ with open('chart_name_url.csv', 'w', newline='') as f:
                          'repo_url': chart_dependency[name]['repo_url']})
 
 # create csv for dependency stats
-with open('chart_dependency_stats.csv', 'w', newline='') as f:
+with open('results/chart_dependency_stats.csv', 'w', newline='') as f:
     field_names = ['repo_chart_name', 'first_layer_dep_count', 'num_layers_below', 'total_dep_count']
     writer = csv.DictWriter(f, fieldnames=field_names)
 
