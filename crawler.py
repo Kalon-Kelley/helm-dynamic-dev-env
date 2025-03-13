@@ -34,30 +34,60 @@ print(f'retrieved top {NUM} charts, crawling through each chart...')
 
 # go through each url and count number of dependencies
 chart_dependency = dict()
-for name in repo_chart_names:
-    url = f'https://artifacthub.io/api/v1/packages/helm/{name}'
-    obj = requests.get(url).json()
-    time.sleep(random_time())
+visited_chart_info = dict()
 
-    chart_info = dict()
+def visit_chart(name):
+    if name in visited_chart_info:
+        return visited_chart_info[name]
+    
+    chart_info = {
+        'repo_url': '',
+        'first_layer_dep_count': 0,
+        'num_layers_below': 0,
+        'total_dep_count': 0
+    }
+
+    try:
+        url = f'https://artifacthub.io/api/v1/packages/helm/{name}'
+        obj = requests.get(url).json()
+        if 'message' in obj and obj['message'] == '':
+            return chart_info
+    except:
+        return chart_info
+
+    time.sleep(random_time())
 
     # count number of dependencies
     if 'dependencies' in obj['data']:
-        chart_info['dep_count'] = len(obj['data']['dependencies'])
+        chart_info['first_layer_dep_count'] = len(obj['data']['dependencies'])
+        chart_info['num_layers_below'] = 1
+        chart_info['total_dep_count'] = chart_info['first_layer_dep_count']
+        for dep in obj['data']['dependencies']:
+            if 'artifacthub_repository_name' in dep:
+                dep_name = f"{dep['artifacthub_repository_name']}/{dep['name']}"
+            else:
+                dep_name = f"bitnami/{dep['name']}"
+            dep_chart_info = visit_chart(dep_name)
+            chart_info['num_layers_below'] = max(chart_info['num_layers_below'], dep_chart_info['num_layers_below'] + 1)
+            chart_info['total_dep_count'] += dep_chart_info['total_dep_count']
     else:
-        chart_info['dep_count'] = 0
+        chart_info['first_layer_dep_count'] = 0
+        chart_info['num_layers_below'] = 0
+        chart_info['total_dep_count'] = 0
     
     # get repo url
     chart_info['repo_url'] = obj['repository']['url']
 
-    # TODO: dependency chain? go to dependencies, do a total count
-    # TODO: does dependency version matter?
-    chart_dependency[name] = chart_info
+    visited_chart_info[name] = chart_info
+    return visited_chart_info[name]
+
+for name in repo_chart_names:
+    chart_dependency[name] = visit_chart(name)
 
 print('finished crawling, creating output files...')
 
 # create csv for evaluation script
-with open('chart_name_url.csv', 'w', newline='') as f:
+with open('results/chart_name_url.csv', 'w', newline='') as f:
     field_names = ['repo_chart_name', 'repo_url']
     writer = csv.DictWriter(f, fieldnames=field_names)
 
@@ -67,14 +97,16 @@ with open('chart_name_url.csv', 'w', newline='') as f:
                          'repo_url': chart_dependency[name]['repo_url']})
 
 # create csv for dependency stats
-with open('chart_dependency.csv', 'w', newline='') as f:
-    field_names = ['repo_chart_name', 'total_dependency_count']
+with open('results/chart_dependency_stats.csv', 'w', newline='') as f:
+    field_names = ['repo_chart_name', 'first_layer_dep_count', 'num_layers_below', 'total_dep_count']
     writer = csv.DictWriter(f, fieldnames=field_names)
 
     writer.writeheader()
     for name in repo_chart_names:
         writer.writerow({'repo_chart_name': name,
-                         'total_dependency_count': chart_dependency[name]['dep_count']})
+                         'first_layer_dep_count': chart_dependency[name]['first_layer_dep_count'],
+                         'num_layers_below': chart_dependency[name]['num_layers_below'],
+                         'total_dep_count': chart_dependency[name]['total_dep_count']})
 
 print('finished creating output files!')
 end_time = time.time()
