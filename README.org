@@ -22,9 +22,6 @@ In order to run the container use the following command from the directory which
 you will be creating charts in. This will automatically pull the docker image
 from dockerhub so no need to build locally prior.
 #+begin_src bash
-  docker run --privileged --rm -itdv $(pwd):/charts --name [NAME] \
-         kalonlkelley/helm-dynamic-dev-env:latest server --snapshotter native
-
   docker run --privileged --rm -itd \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v $(pwd):/charts --name [NAME] \
