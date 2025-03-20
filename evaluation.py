@@ -25,11 +25,15 @@ def process_charts_and_evaluate(repo, chart):
     subprocess.run(f'helm repo add {chart.split("/")[0]} {repo}', shell=True, text=True)
     subprocess.run(f'helm pull {chart} --untar --destination {WORKSPACE}', shell=True, text=True)
 
-    chart_yaml_path = Path(WORKSPACE) / chart_name / 'Chart.yaml'
+    chart_path = Path(WORKSPACE) / chart_name
+    chart_yaml_path = chart_path / 'Chart.yaml'
 
     if not Path(chart_yaml_path).exists():
         print(f'Skipping {repo} and {chart}: not found')
         return None, None
+
+    shutil.rmtree(chart_path / 'charts', ignore_errors=True)
+    shutil.rmtree(chart_path / 'Chart.lock', ignore_errors=True)
 
     static_chart_path = Path(WORKSPACE) / f'{chart_name}_static'
     dynamic_chart_path = Path(WORKSPACE) / f'{chart_name}_dynamic'
@@ -50,8 +54,6 @@ def process_charts_and_evaluate(repo, chart):
         dynamic_version = chart_data['version']
     with open(dynamic_chart_path / 'Chart.yaml', 'w') as f:
         yaml.dump(chart_data, f, default_flow_style=False)
-    shutil.rmtree(dynamic_chart_path / 'charts', ignore_errors=True)
-    shutil.rmtree(dynamic_chart_path / 'Chart.lock', ignore_errors=True)
 
     return static_chart_path, dynamic_chart_path, static_version, dynamic_version
 
@@ -74,8 +76,8 @@ def run_command_timed(cmd, path=None):
 def calculate_build_time_overhead(chart, static_chart_path, dynamic_chart_path):
     """ Calculate build time overhead
     """
-    static_time = run_command_timed('helm package .', path=static_chart_path)
-    dynamic_time = run_command_timed('helm-dyn package .', path=dynamic_chart_path)
+    static_time = run_command_timed('helm dependency update && helm package .', path=static_chart_path)
+    dynamic_time = run_command_timed('helm-dyn dependency update && helm-dyn package .', path=dynamic_chart_path)
 
     return {
         'Chart': chart,
