@@ -1,0 +1,57 @@
+[
+  {
+    "package": "request",
+    "dynamic": {
+      "time": "1.07",
+      "storage": "5.00"
+    },
+    "static": {
+      "time": "1.00",
+      "storage": "5.00"
+    }
+  },
+  {
+    "package": "express",
+    "dynamic": {
+      "time": "1.04",
+      "storage": "4.00"
+    },
+    "static": {
+      "time": "1.20",
+      "storage": "4.00"
+    }
+  },
+  {
+    "package": "debug",
+    "dynamic": {
+      "time": "0.82",
+      "storage": "0.00"
+    },
+    "static": {
+      "time": "0.80",
+      "storage": "0.00"
+    }
+  },
+  {
+    "package": "fs-extra",
+    "dynamic": {
+      "time": "0.58",
+      "storage": "0.00"
+    },
+    "static": {
+      "time": "0.68",
+      "storage": "0.00"
+    }
+  },
+  {
+    "package": "prop-types",
+    "dynamic": {
+      "time": "0.92",
+      "storage": "0.00"
+    },
+    "static": {
+      "time": "0.63",
+      "storage": "0.00"
+    }
+  }
+]
