@@ -1,0 +1,90 @@
+[
+  {
+    "package": "request",
+    "dynamic": {
+      "time": "1.27",
+      "storage": "5.00"
+    },
+    "static": {
+      "time": "1.08",
+      "storage": "5.00"
+    }
+  },
+  {
+    "package": "express",
+    "dynamic": {
+      "time": "1.25",
+      "storage": "4.00"
+    },
+    "static": {
+      "time": "1.28",
+      "storage": "4.00"
+    }
+  },
+  {
+    "package": "debug",
+    "dynamic": {
+      "time": "0.85",
+      "storage": "0.00"
+    },
+    "static": {
+      "time": "0.86",
+      "storage": "0.00"
+    }
+  },
+  {
+    "package": "fs-extra",
+    "dynamic": {
+      "time": "0.83",
+      "storage": "0.00"
+    },
+    "static": {
+      "time": "0.80",
+      "storage": "0.00"
+    }
+  },
+  {
+    "package": "prop-types",
+    "dynamic": {
+      "time": "0.93",
+      "storage": "0.00"
+    },
+    "static": {
+      "time": "0.90",
+      "storage": "0.00"
+    }
+  },
+  {
+    "package": "react-dom",
+    "dynamic": {
+      "time": "0.85",
+      "storage": "6.00"
+    },
+    "static": {
+      "time": "0.80",
+      "storage": "6.00"
+    }
+  },
+  {
+    "package": "vue",
+    "dynamic": {
+      "time": "1.10",
+      "storage": "17.00"
+    },
+    "static": {
+      "time": "1.03",
+      "storage": "17.00"
+    }
+  },
+  {
+    "package": "axios",
+    "dynamic": {
+      "time": "1.01",
+      "storage": "4.00"
+    },
+    "static": {
+      "time": "0.92",
+      "storage": "4.00"
+    }
+  }
+]
