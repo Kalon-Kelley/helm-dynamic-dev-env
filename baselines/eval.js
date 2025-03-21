@@ -1,7 +1,7 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 
-const topPackages = ['request', 'express', 'debug', 'fs-extra', 'prop-types'];
+const topPackages = ['express', 'debug', 'fs-extra', 'prop-types', 'react-dom'];
 
 const measureTime = (fn) => {
     const start = process.hrtime();
@@ -24,10 +24,16 @@ const getStorageUsage = () => {
 const testPackageDynamic = (pkg) => {
     execSync('rm -rf ./app', { stdio: 'inherit' });
     execSync('mkdir -p ./app/test', { stdio: 'inherit' });
-    execSync('cd ./app/test && npm init -y > /dev/null 2>&1', { stdio: 'inherit' });
+    execSync('chmod 777 ./app/test', { stido: 'inherit' });
+    execSync(`cd ./app/test && npm show ${pkg} --json > package.json`, { stdio: 'inherit' });
+    let pkgjson = JSON.parse(fs.readFileSync('./app/test/package.json'));
+    pkgjson.bundleDependencies = 'false';
+    fs.writeFileSync('./app/test/package.json', JSON.stringify(pkgjson, null, 2));
+    execSync('chmod 777 ./app/test/package.json', { stido: 'inherit' });
+    execSync('cd ./app/test && npm pack && npm init -y', {stdio: 'inherit'});
     const beforeDynamicSize = getStorageUsage();
     const dynamicTime = measureTime(() => {
-        execSync(`npm install ${pkg}`, { cwd: './app/test', stdio: 'ignore' });
+        execSync(`npm install *.tgz --force`, { cwd: './app/test', stdio: 'ignore' });
     });
     const afterDynamicSize = getStorageUsage();
     const dynamicStorage = (afterDynamicSize - beforeDynamicSize).toFixed(2);
@@ -41,15 +47,16 @@ const testPackageDynamic = (pkg) => {
 const testPackageStatic = (pkg) => {
     execSync('rm -rf ./app', { stdio: 'inherit' });
     execSync('mkdir -p ./app/test', { stdio: 'inherit' });
-    execSync('cd ./app/test && npm init -y > /dev/null 2>&1', { stdio: 'inherit' });
-    fs.writeFileSync('./app/test/package.json', JSON.stringify({
-        name: "test",
-        version: "1.0.0",
-        dependencies: { [pkg]: "*" }
-    }, null, 2));
+    execSync('chmod 777 ./app/test', { stido: 'inherit' });
+    execSync(`cd ./app/test && npm show ${pkg} --json > package.json`, { stdio: 'inherit' });
+    let pkgjson = JSON.parse(fs.readFileSync('./app/test/package.json'));
+    pkgjson.bundleDependencies = 'true';
+    fs.writeFileSync('./app/test/package.json', JSON.stringify(pkgjson, null, 2));
+    execSync('chmod 777 ./app/test/package.json', { stido: 'inherit' });
+    execSync('cd ./app/test && npm pack && npm init -y', {stdio: 'inherit'});
     const beforeStaticSize = getStorageUsage();
     const staticTime = measureTime(() => {
-        execSync(`npm install`, { cwd: './app/test', stdio: 'ignore' });
+        execSync(`npm install *.tgz --force`, { cwd: './app/test', stdio: 'ignore' });
     });
     const afterStaticSize = getStorageUsage();
     const staticStorage = (afterStaticSize - beforeStaticSize).toFixed(2);
